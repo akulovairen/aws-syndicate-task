@@ -23,15 +23,15 @@ import java.util.stream.Stream;
 	roleName = "uuid_generator-role"
 )
 @RuleEventSource(targetRule = "uuid_trigger")
-@DependsOn(name = "uuid-storage", resourceType = ResourceType.S3_BUCKET)
+//@DependsOn(name = "uuid-storage", resourceType = ResourceType.S3_BUCKET)
 @EnvironmentVariables(value = {
 		@EnvironmentVariable(key = "target_bucket", value = "uuid-storage")
 })
-public class UuidGenerator implements RequestHandler<Object, String> {
+public class UuidGenerator implements RequestHandler<Object, Void> {
 	private final String bucket_name = "cmtr-804a9f76-uuid-storage-test";
 
 	@Override
-	public String handleRequest(Object input, Context context) {
+	public Void handleRequest(Object input, Context context) {
 		List<String> uuids = generateUUIDs();
 		String fileName = Instant.now().toString();
 		String fileContent = String.format("{\"ids\": %s}", toJsonArrayConvert(uuids));
@@ -44,7 +44,7 @@ public class UuidGenerator implements RequestHandler<Object, String> {
 				.build(),
 				RequestBody.fromString(fileContent));
 
-		return "UUIDs generated and stored successfully!";
+		return null;
 	}
 
 	private List<String> generateUUIDs() {
