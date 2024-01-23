@@ -23,7 +23,6 @@ import java.util.stream.Stream;
 	roleName = "uuid_generator-role"
 )
 @RuleEventSource(targetRule = "uuid_trigger")
-//@DependsOn(name = "uuid-storage", resourceType = ResourceType.S3_BUCKET)
 @EnvironmentVariables(value = {
 		@EnvironmentVariable(key = "target_bucket", value = "uuid-storage")
 })
