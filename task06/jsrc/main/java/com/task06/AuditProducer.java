@@ -50,7 +50,7 @@ public class AuditProducer implements RequestHandler<DynamodbEvent, Void> {
 	private void createAuditItem(DynamodbEvent.DynamodbStreamRecord dynamodbStreamRecord, Table auditTable){
 		Map<String, AttributeValue> newImage = dynamodbStreamRecord.getDynamodb().getNewImage();
 
-		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssX");
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSX");
 		String modificationTime = ZonedDateTime.now().format(formatter);
 
 		String key = newImage.get("key").getS();
