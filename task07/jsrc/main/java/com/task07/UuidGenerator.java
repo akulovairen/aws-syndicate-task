@@ -2,6 +2,8 @@ package com.task07;
 
 import com.amazonaws.services.lambda.runtime.Context;
 import com.amazonaws.services.lambda.runtime.RequestHandler;
+import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
+import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.events.RuleEventSource;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
 import com.syndicate.deployment.annotations.resources.DependsOn;
@@ -22,6 +24,9 @@ import java.util.stream.Stream;
 )
 @RuleEventSource(targetRule = "uuid_trigger")
 @DependsOn(name = "uuid-storage", resourceType = ResourceType.S3_BUCKET)
+@EnvironmentVariables(value = {
+		@EnvironmentVariable(key = "target_bucket", value = "uuid-storage")
+})
 public class UuidGenerator implements RequestHandler<Object, String> {
 	private final String bucket_name = "cmtr-804a9f76-uuid-storage-test";
 
