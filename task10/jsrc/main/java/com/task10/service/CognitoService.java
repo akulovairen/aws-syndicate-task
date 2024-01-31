@@ -17,10 +17,6 @@ public class CognitoService {
 	}
 
 	public void signUpUser(String firstName, String lastName, String email, String password) {
-		if (!isPasswordValid(password)) {
-			System.err.println("Password does not meet security requirements.");
-			return;
-		}
 		try {
 			AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
 					.userPoolId(getUserPoolId())
@@ -29,6 +25,8 @@ public class CognitoService {
 					.userAttributes(
 							AttributeType.builder()
 									.name("custom:firstName").value(firstName)
+									.build(),
+							AttributeType.builder()
 									.name("custom:lastName").value(lastName)
 									.build()
 					)
@@ -37,37 +35,16 @@ public class CognitoService {
 
 			cognitoClient.adminCreateUser(createUserRequest);
 
-//		AttributeType userAttrs = AttributeType.builder()
-//				.name("email").value(email)
-//				.name("name").value(firstName)
-//				.build();
-//
-//		List<AttributeType> userAttrsList = new ArrayList<>();
-//		userAttrsList.add(userAttrs);
-//		try {
-//			SignUpRequest signUpRequest = SignUpRequest.builder()
-//					.userAttributes(userAttrsList)
-//					.username(email)
-//					.clientId(getUserPoolClientId())
-//					.password(password)
-//					.build();
-//
-//			cognitoClient.signUp(signUpRequest);
+			AdminConfirmSignUpRequest confirmSignUpRequest = AdminConfirmSignUpRequest.builder()
+					.userPoolId(getUserPoolId())
+					.username(email)
+					.build();
 
-//			AdminConfirmSignUpRequest confirmSignUpRequest = AdminConfirmSignUpRequest.builder()
-//					.userPoolId(getUserPoolId())
-//					.username(email)
-//					.build();
-//
-//			cognitoClient.adminConfirmSignUp(confirmSignUpRequest);
+			cognitoClient.adminConfirmSignUp(confirmSignUpRequest);
 
 		} catch (CognitoIdentityProviderException e) {
 			System.err.println(e.awsErrorDetails().errorMessage());
 		}
-	}
-
-	private boolean isPasswordValid(String password) {
-		return password.length() >= 12 && password.matches("^(?=.*[A-Za-z0-9@$%^*]).*$");
 	}
 
 	public String signInUser(String email, String password) {
