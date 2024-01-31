@@ -62,7 +62,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 			try {
 				cognitoService.signUpUser(firstName, lastName, email, password);
 				return new APIGatewayProxyResponseEvent().withStatusCode(200);
-			} catch (CognitoIdentityProviderException e) {
+			} catch (Exception e) {
 				return new APIGatewayProxyResponseEvent().withStatusCode(400);
 			}
 		}
