@@ -192,9 +192,7 @@
     "auto_verified_attributes": ["email"],
     "sms_configuration": {},
     "username_attributes": [
-      "email",
-      "given_name",
-      "family_name"
+      "email"
     ],
     "custom_attributes": [],
     "client": {

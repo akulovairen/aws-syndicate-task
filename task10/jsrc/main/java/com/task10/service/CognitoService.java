@@ -21,9 +21,8 @@ public class CognitoService {
 				.name("email").value(email)
 				.build();
 		AttributeType userAttrs2 = AttributeType.builder()
-				.name("given_name").value(firstName)
+				.name("name").value(firstName)
 				.build();
-
 		AttributeType userAttrs3 = AttributeType.builder()
 				.name("family_name").value(lastName)
 				.build();
