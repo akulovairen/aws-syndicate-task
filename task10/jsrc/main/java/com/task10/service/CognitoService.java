@@ -32,7 +32,7 @@ public class CognitoService {
 									.name("custom:lastName").value(lastName)
 									.build()
 					)
-					.messageAction("SUPPRESS")
+					.messageAction(MessageActionType.SUPPRESS)
 					.build();
 
 			cognitoClient.adminCreateUser(createUserRequest);
