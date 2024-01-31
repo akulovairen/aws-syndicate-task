@@ -17,23 +17,22 @@ public class CognitoService {
 	}
 
 	public void signUpUser(String firstName, String lastName, String email, String password) {
+		AttributeType userAttrs = AttributeType.builder()
+				.name("email").value(email)
+				.name("name").value(firstName)
+				.build();
+
+		List<AttributeType> userAttrsList = new ArrayList<>();
+		userAttrsList.add(userAttrs);
 		try {
-			AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
-					.userPoolId(getUserPoolId())
+			SignUpRequest signUpRequest = SignUpRequest.builder()
+					.userAttributes(userAttrsList)
 					.username(email)
-					.temporaryPassword(password)
-					.userAttributes(
-							AttributeType.builder()
-									.name("custom:firstName").value(firstName)
-									.build(),
-							AttributeType.builder()
-									.name("custom:lastName").value(lastName)
-									.build()
-					)
-					.messageAction(MessageActionType.SUPPRESS)
+					.clientId(getUserPoolClientId())
+					.password(password)
 					.build();
 
-			cognitoClient.adminCreateUser(createUserRequest);
+			cognitoClient.signUp(signUpRequest);
 
 			AdminConfirmSignUpRequest confirmSignUpRequest = AdminConfirmSignUpRequest.builder()
 					.userPoolId(getUserPoolId())
