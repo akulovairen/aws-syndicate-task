@@ -42,6 +42,8 @@ public class CognitoService {
 
 			cognitoClient.signUp(signUpRequest);
 
+			verifyEmail(email);
+
 			AdminConfirmSignUpRequest confirmSignUpRequest = AdminConfirmSignUpRequest.builder()
 					.userPoolId(getUserPoolId())
 					.username(email)
@@ -51,6 +53,21 @@ public class CognitoService {
 
 		} catch (CognitoIdentityProviderException e) {
 			System.err.println(e.awsErrorDetails().errorMessage());
+		}
+	}
+
+	private void verifyEmail(String email) {
+		AdminUpdateUserAttributesRequest updateAttributesRequest = AdminUpdateUserAttributesRequest.builder()
+				.userPoolId(getUserPoolId())
+				.username(email)
+				.userAttributes(AttributeType.builder().name("email_verified").value("true").build())
+				.build();
+
+		try {
+			cognitoClient.adminUpdateUserAttributes(updateAttributesRequest);
+			System.out.println("Email verification successful.");
+		} catch (CognitoIdentityProviderException e) {
+			System.err.println("Error during email verification: " + e.awsErrorDetails().errorMessage());
 		}
 	}
 
