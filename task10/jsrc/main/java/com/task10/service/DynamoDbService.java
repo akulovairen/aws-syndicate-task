@@ -14,7 +14,6 @@ import com.task10.model.Tables;
 
 import java.math.BigDecimal;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class DynamoDbService {
 	private final AmazonDynamoDB amazonClient;
@@ -69,14 +68,7 @@ public class DynamoDbService {
 			tableList.add(reservation);
 		}
 
-		return tableList.stream().map(reservation -> new Reservations(
-						reservation.getTableNumber(),
-						reservation.getClientName(),
-						reservation.getPhoneNumber(),
-						reservation.getDate(),
-						reservation.getSlotTimeEnd(),
-						reservation.getSlotTimeStart()))
-				.collect(Collectors.toList());
+		return tableList;
 	}
 
 	public int createTable(TablesInfoDto tablesInfoDto) {

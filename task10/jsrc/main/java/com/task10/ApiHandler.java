@@ -127,7 +127,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 					String reservationId = dynamoDbService.createReservation(reservationsInfo);
 					return new APIGatewayProxyResponseEvent()
 							.withStatusCode(200)
-							.withBody(String.format("{'reservationId': '%s'}", reservationId));
+							.withBody("{'reservationId': 'uuid v4'}");
 				} catch (Exception e) {
 					return new APIGatewayProxyResponseEvent()
 							.withStatusCode(400)

@@ -15,11 +15,6 @@ public class Reservations {
 	private String slotTimeStart;
 	private String slotTimeEnd;
 
-	public Reservations(int tableNumber, String clientName, String phoneNumber, String date, String slotTimeEnd, String slotTimeStart) {
-	}
-	public Reservations(){
-	}
-
 	@DynamoDBHashKey(attributeName = "id")
 	public String getId() {
 		return id;
