@@ -14,6 +14,7 @@ import com.task10.model.Tables;
 
 import java.math.BigDecimal;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class DynamoDbService {
 	private final AmazonDynamoDB amazonClient;
@@ -68,7 +69,14 @@ public class DynamoDbService {
 			tableList.add(reservation);
 		}
 
-		return tableList;
+		return tableList.stream().map(reservation -> new Reservations(
+						reservation.getTableNumber(),
+						reservation.getClientName(),
+						reservation.getPhoneNumber(),
+						reservation.getDate(),
+						reservation.getSlotTimeEnd(),
+						reservation.getSlotTimeStart()))
+				.collect(Collectors.toList());
 	}
 
 	public int createTable(TablesInfoDto tablesInfoDto) {
@@ -121,16 +129,16 @@ public class DynamoDbService {
 		return false;
 	}
 
-	private boolean doesReservationExist(ReservationInfo reservationsRequest) {
+	private boolean doesReservationExist(ReservationInfo reservationInfo) {
 		List<Reservations> reservationsList = getReservations();
 
 		for (Reservations reservation : reservationsList) {
-			if (reservation.getClientName().equals(reservationsRequest.getClientName())
-					&& reservation.getDate().equals(reservationsRequest.getDate())
-					&& reservation.getTableNumber() == reservationsRequest.getTableNumber()
-					&& reservation.getSlotTimeEnd().equals(reservationsRequest.getSlotTimeEnd())
-					&& reservation.getSlotTimeStart().equals(reservationsRequest.getSlotTimeStart())
-					&& reservation.getPhoneNumber().equals(reservationsRequest.getPhoneNumber())) {
+			if (reservation.getClientName().equals(reservationInfo.getClientName())
+					&& reservation.getDate().equals(reservationInfo.getDate())
+					&& reservation.getTableNumber() == reservationInfo.getTableNumber()
+					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
+					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
+					&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber())) {
 				return true;
 			}
 		}

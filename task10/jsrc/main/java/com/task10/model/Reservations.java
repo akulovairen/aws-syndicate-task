@@ -3,7 +3,10 @@ package com.task10.model;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBAttribute;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBHashKey;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
+import lombok.AllArgsConstructor;
+import lombok.NoArgsConstructor;
 
+@NoArgsConstructor
 @DynamoDBTable(tableName = "cmtr-804a9f76-Reservations-test")
 public class Reservations {
 	@DynamoDBHashKey(attributeName = "id")
@@ -14,6 +17,9 @@ public class Reservations {
 	private String date;
 	private String slotTimeStart;
 	private String slotTimeEnd;
+
+	public Reservations(int tableNumber, String clientName, String phoneNumber, String date, String slotTimeEnd, String slotTimeStart) {
+	}
 
 	@DynamoDBHashKey(attributeName = "id")
 	public String getId() {
