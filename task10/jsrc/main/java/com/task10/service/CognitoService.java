@@ -19,11 +19,20 @@ public class CognitoService {
 	public void signUpUser(String firstName, String lastName, String email, String password) {
 		AttributeType userAttrs = AttributeType.builder()
 				.name("email").value(email)
-				.name("name").value(firstName)
+				.build();
+		AttributeType userAttrs2 = AttributeType.builder()
+				.name("given_name").value(firstName)
+				.build();
+
+		AttributeType userAttrs3 = AttributeType.builder()
+				.name("family_name").value(lastName)
 				.build();
 
 		List<AttributeType> userAttrsList = new ArrayList<>();
 		userAttrsList.add(userAttrs);
+		userAttrsList.add(userAttrs2);
+		userAttrsList.add(userAttrs3);
+
 		try {
 			SignUpRequest signUpRequest = SignUpRequest.builder()
 					.userAttributes(userAttrsList)
