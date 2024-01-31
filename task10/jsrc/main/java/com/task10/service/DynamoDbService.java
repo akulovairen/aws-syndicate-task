@@ -132,17 +132,27 @@ public class DynamoDbService {
 	private boolean doesReservationExist(ReservationInfo reservationInfo) {
 		List<Reservations> reservationsList = getReservations();
 
-		for (Reservations reservation : reservationsList) {
-			if (reservation.getClientName().equals(reservationInfo.getClientName())
-					&& reservation.getDate().equals(reservationInfo.getDate())
-					&& reservation.getTableNumber() == reservationInfo.getTableNumber()
-					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
-					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
-					&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber())) {
-				return true;
-			}
-		}
-		return false;
+		return reservationsList.stream()
+				.anyMatch(reservation ->
+						reservation.getTableNumber() == reservationInfo.getTableNumber()
+								&& reservation.getDate().equals(reservationInfo.getDate())
+								&& reservation.getClientName().equals(reservationInfo.getClientName())
+								&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
+								&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
+								&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber()));
+
+
+//		for (Reservations reservation : reservationsList) {
+//			if (reservation.getTableNumber() == reservationInfo.getTableNumber()
+//					&& reservation.getDate().equals(reservationInfo.getDate())
+//					&& reservation.getClientName().equals(reservationInfo.getClientName())
+//					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
+//					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
+//					&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber())) {
+//				return true;
+//			}
+//		}
+//		return false;
 	}
 
 	public Tables getTableById(int tableId) {
