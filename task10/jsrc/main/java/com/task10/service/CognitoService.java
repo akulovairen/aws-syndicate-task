@@ -21,44 +21,45 @@ public class CognitoService {
 			System.err.println("Password does not meet security requirements.");
 			return;
 		}
-//		try {
-//			AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
-//					.userPoolId(getUserPoolId())
-//					.username(email)
-//					.temporaryPassword(password)
-//					.userAttributes(
-//							AttributeType.builder().name("email").value(email)
-//									.name("firstName").value(firstName)
-//									.build()
-//					)
-//					.messageAction("SUPPRESS")
-//					.build();
-//
-//			cognitoClient.adminCreateUser(createUserRequest);
-
-		AttributeType userAttrs = AttributeType.builder()
-				.name("email").value(email)
-				.name("name").value(firstName)
-				.build();
-
-		List<AttributeType> userAttrsList = new ArrayList<>();
-		userAttrsList.add(userAttrs);
 		try {
-			SignUpRequest signUpRequest = SignUpRequest.builder()
-					.userAttributes(userAttrsList)
-					.username(email)
-					.clientId(getUserPoolClientId())
-					.password(password)
-					.build();
-
-			cognitoClient.signUp(signUpRequest);
-
-			AdminConfirmSignUpRequest confirmSignUpRequest = AdminConfirmSignUpRequest.builder()
+			AdminCreateUserRequest createUserRequest = AdminCreateUserRequest.builder()
 					.userPoolId(getUserPoolId())
 					.username(email)
+					.temporaryPassword(password)
+					.userAttributes(
+							AttributeType.builder()
+									.name("custom:firstName").value(firstName)
+									.name("custom:lastName").value(lastName)
+									.build()
+					)
+					.messageAction("SUPPRESS")
 					.build();
 
-			cognitoClient.adminConfirmSignUp(confirmSignUpRequest);
+			cognitoClient.adminCreateUser(createUserRequest);
+
+//		AttributeType userAttrs = AttributeType.builder()
+//				.name("email").value(email)
+//				.name("name").value(firstName)
+//				.build();
+//
+//		List<AttributeType> userAttrsList = new ArrayList<>();
+//		userAttrsList.add(userAttrs);
+//		try {
+//			SignUpRequest signUpRequest = SignUpRequest.builder()
+//					.userAttributes(userAttrsList)
+//					.username(email)
+//					.clientId(getUserPoolClientId())
+//					.password(password)
+//					.build();
+//
+//			cognitoClient.signUp(signUpRequest);
+
+//			AdminConfirmSignUpRequest confirmSignUpRequest = AdminConfirmSignUpRequest.builder()
+//					.userPoolId(getUserPoolId())
+//					.username(email)
+//					.build();
+//
+//			cognitoClient.adminConfirmSignUp(confirmSignUpRequest);
 
 		} catch (CognitoIdentityProviderException e) {
 			System.err.println(e.awsErrorDetails().errorMessage());
