@@ -116,8 +116,9 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 
 		if (path.equals("/reservations")) {
 			if (apiGatewayProxyRequestEvent.getHttpMethod().equals("GET")) {
-				List<Reservations> reservations = dynamoDbService.getReservations();
-				ReservationsListDto reservationsListDto = new ReservationsListDto(reservations);
+				List<Map<String, Object>> reservations = dynamoDbService.getReservations();
+				ReservationsListDto reservationsListDto = new ReservationsListDto();
+				reservationsListDto.setReservations(reservations);
 				return new APIGatewayProxyResponseEvent()
 						.withBody(gson.toJson(reservationsListDto));
 			} else if (apiGatewayProxyRequestEvent.getHttpMethod().equals("POST")) {
@@ -127,7 +128,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 					String reservationId = dynamoDbService.createReservation(reservationsInfo);
 					return new APIGatewayProxyResponseEvent()
 							.withStatusCode(200)
-							.withBody("{'reservationId': 'uuid v4'}");
+							.withBody(String.format("{\"reservationId\": %s}", reservationId));
 				} catch (Exception e) {
 					return new APIGatewayProxyResponseEvent()
 							.withStatusCode(400)
