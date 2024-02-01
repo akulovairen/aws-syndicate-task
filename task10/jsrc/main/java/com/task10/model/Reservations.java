@@ -6,9 +6,8 @@ import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBTable;
 
 @DynamoDBTable(tableName = "cmtr-804a9f76-Reservations-test")
 public class Reservations {
-//	@DynamoDBHashKey(attributeName = "id")
-//	private String id;
-	@DynamoDBHashKey(attributeName = "tableNumber")
+	@DynamoDBHashKey(attributeName = "id")
+	private String id;
 	private int tableNumber;
 	private String clientName;
 	private String phoneNumber;
@@ -16,16 +15,16 @@ public class Reservations {
 	private String slotTimeStart;
 	private String slotTimeEnd;
 
-//	@DynamoDBHashKey(attributeName = "id")
-//	public String getId() {
-//		return id;
-//	}
-//
-//	public void setId(String id) {
-//		this.id = id;
-//	}
+	@DynamoDBHashKey(attributeName = "id")
+	public String getId() {
+		return id;
+	}
 
-	@DynamoDBHashKey(attributeName = "tableNumber")
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	@DynamoDBAttribute(attributeName = "tableNumber")
 	public int getTableNumber() {
 		return tableNumber;
 	}

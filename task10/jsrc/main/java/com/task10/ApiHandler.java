@@ -9,10 +9,7 @@ import com.google.gson.reflect.TypeToken;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariable;
 import com.syndicate.deployment.annotations.environment.EnvironmentVariables;
 import com.syndicate.deployment.annotations.lambda.LambdaHandler;
-import com.task10.dynamoDbDto.ReservationInfo;
-import com.task10.dynamoDbDto.ReservationsListDto;
-import com.task10.dynamoDbDto.TablesInfoDto;
-import com.task10.dynamoDbDto.TablesListDto;
+import com.task10.dynamoDbDto.*;
 import com.task10.model.Reservations;
 import com.task10.model.Tables;
 import com.task10.service.CognitoService;
@@ -116,9 +113,10 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 
 		if (path.equals("/reservations")) {
 			if (apiGatewayProxyRequestEvent.getHttpMethod().equals("GET")) {
-				List<Reservations> reservations = dynamoDbService.getReservations();
+				List<ReservationDto> reservations = dynamoDbService.getReservations();
 				ReservationsListDto reservationsListDto = new ReservationsListDto();
 				reservationsListDto.setReservations(reservations);
+				System.out.println(reservationsListDto);
 				return new APIGatewayProxyResponseEvent()
 						.withBody(gson.toJson(reservationsListDto));
 			} else if (apiGatewayProxyRequestEvent.getHttpMethod().equals("POST")) {
