@@ -113,17 +113,21 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 
 		if (path.equals("/reservations")) {
 			if (apiGatewayProxyRequestEvent.getHttpMethod().equals("GET")) {
-				List<Reservations> reservations = dynamoDbService.getReservations();
+				List<ReservationDto> reservations = dynamoDbService.getReservations();
+				Map<String, List<ReservationDto>> response = new HashMap<>();
+				response.put("reservations", reservations);
 				return new APIGatewayProxyResponseEvent()
-						.withBody(gson.toJson(reservations));
+						.withBody(gson.toJson(response));
 			} else if (apiGatewayProxyRequestEvent.getHttpMethod().equals("POST")) {
 				ReservationInfo reservationsInfo = gson.fromJson(apiGatewayProxyRequestEvent.getBody(), new TypeToken<ReservationInfo>() {
 				}.getType());
 				try {
 					String reservationId = dynamoDbService.createReservation(reservationsInfo);
+					Map<String,String> response = new HashMap<>();
+					response.put("reservationId", reservationId);
 					return new APIGatewayProxyResponseEvent()
 							.withStatusCode(200)
-							.withBody(reservationId);
+							.withBody(gson.toJson(response));
 				} catch (Exception e) {
 					return new APIGatewayProxyResponseEvent()
 							.withStatusCode(400)

@@ -13,5 +13,5 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationsListDto {
-	private List<ReservationDto> reservations;
+	private List<Reservations> reservations;
 }

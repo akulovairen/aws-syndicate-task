@@ -47,17 +47,17 @@ public class DynamoDbService {
 		return tablesList;
 	}
 
-	public List<Reservations> getReservations() {
+	public List<ReservationDto> getReservations() {
 		DynamoDB dynamoDB = new DynamoDB(amazonClient);
 		Table reservationTable = dynamoDB.getTable(RESERVATION_TABLE);
 
 		Iterator<Item> iterator = reservationTable.scan().iterator();
-		ArrayList<Reservations> tableList = new ArrayList<>();
+		ArrayList<ReservationDto> tableList = new ArrayList<>();
 
 		while (iterator.hasNext()) {
 			Item item = iterator.next();
-			Reservations reservation = new Reservations();
-			reservation.setId(item.getString("id"));
+			ReservationDto reservation = new ReservationDto();
+//			reservation.setId(item.getString("id"));
 			reservation.setDate(item.getString("date"));
 			reservation.setClientName(item.getString("clientName"));
 			reservation.setSlotTimeEnd(item.getString("slotTimeEnd"));
@@ -126,10 +126,13 @@ public class DynamoDbService {
 	}
 
 	private boolean doesReservationExist(ReservationInfo reservationInfo) {
-		List<Reservations> reservationsList = getReservations();
+		List<ReservationDto> reservationsList = getReservations();
 
-		for (Reservations reservation : reservationsList) {
-			if (reservation.getTableNumber() == reservationInfo.getTableNumber()) {
+		for (ReservationDto reservation : reservationsList) {
+			if (reservation.getTableNumber() == reservationInfo.getTableNumber()
+					&& reservation.getDate().equals(reservationInfo.getDate())
+					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
+					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())) {
 				return true;
 			}
 		}
