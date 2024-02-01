@@ -3,7 +3,6 @@ package com.task10.service;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
-import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.task10.dynamoDbDto.ReservationInfo;
@@ -51,25 +50,13 @@ public class DynamoDbService {
 		DynamoDB dynamoDB = new DynamoDB(amazonClient);
 		Table reservationTable = dynamoDB.getTable(RESERVATION_TABLE);
 
-		DynamoDBMapper mapper = new DynamoDBMapper(amazonClient);
-
-		Map<Class<?>, List<KeyPair>> keyPairMap = new HashMap<>();
-		keyPairMap.put(Reservations.class, Collections.emptyList());
-
-		Map<String, List<Object>> result = mapper.batchLoad(keyPairMap);
-
-		List<Object> reservationsObjects = result.get(RESERVATION_TABLE);
-
-		System.out.println(reservationsObjects);
-
-
 		Iterator<Item> iterator = reservationTable.scan().iterator();
 		ArrayList<Reservations> tableList = new ArrayList<>();
 
 		while (iterator.hasNext()) {
 			Item item = iterator.next();
 			Reservations reservation = new Reservations();
-			reservation.setId(item.getString("id"));
+//			reservation.setId(item.getString("id"));
 			reservation.setDate(item.getString("date"));
 			reservation.setClientName(item.getString("clientName"));
 			reservation.setSlotTimeEnd(item.getString("slotTimeEnd"));
@@ -102,26 +89,14 @@ public class DynamoDbService {
 			throw new RuntimeException("Table does not exist");
 		}
 
-		getReservations().stream().filter(x ->
-				x.getClientName().equals(reservationInfo.getClientName())
-						&& x.getDate().equals(reservationInfo.getDate())
-						&& x.getTableNumber() == reservationInfo.getTableNumber()
-						&& x.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
-						&& x.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
-						&& x.getPhoneNumber().equals(reservationInfo.getPhoneNumber())
-		).findFirst().ifPresent(x -> {
-			System.out.println("Item already exists");
-			throw new RuntimeException();
-		});
-
-//		if (doesReservationExist(reservationInfo)) {
-//			System.out.println("Reservation already exists");
-//			throw new RuntimeException("Reservation already exists");
-//		}
+		if (doesReservationExist(reservationInfo)) {
+			System.out.println("Reservation already exists");
+			throw new RuntimeException("Reservation already exists");
+		}
 
 		Reservations reservations = new Reservations();
 		String reservationId = UUID.randomUUID().toString();
-		reservations.setId(reservationId);
+//		reservations.setId(reservationId);
 		reservations.setTableNumber(reservationInfo.getTableNumber());
 		reservations.setClientName(reservationInfo.getClientName());
 		reservations.setPhoneNumber(reservationInfo.getPhoneNumber());
@@ -132,6 +107,7 @@ public class DynamoDbService {
 		DynamoDBMapper mapper = new DynamoDBMapper(amazonClient);
 		mapper.save(reservations);
 		System.out.println("Reservation success");
+		System.out.println(reservationId);
 
 		return reservationId;
 	}
