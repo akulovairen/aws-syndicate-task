@@ -47,24 +47,24 @@ public class DynamoDbService {
 		return tablesList;
 	}
 
-	public List<ReservationDto> getReservations() {
+	public List<Reservations> getReservations() {
 		DynamoDB dynamoDB = new DynamoDB(amazonClient);
 		Table reservationTable = dynamoDB.getTable(RESERVATION_TABLE);
 
 		Iterator<Item> iterator = reservationTable.scan().iterator();
-		ArrayList<ReservationDto> tableList = new ArrayList<>();
+		ArrayList<Reservations> tableList = new ArrayList<>();
 
 		while (iterator.hasNext()) {
 			Item item = iterator.next();
-			ReservationDto reservationDto = new ReservationDto();
-//			reservationDto.setId(item.getString("id"));
-			reservationDto.setDate(item.getString("date"));
-			reservationDto.setClientName(item.getString("clientName"));
-			reservationDto.setSlotTimeEnd(item.getString("slotTimeEnd"));
-			reservationDto.setSlotTimeStart(item.getString("slotTimeStart"));
-			reservationDto.setPhoneNumber(item.getString("phoneNumber"));
-			reservationDto.setTableNumber(item.getInt("tableNumber"));
-			tableList.add(reservationDto);
+			Reservations reservation = new Reservations();
+			reservation.setId(item.getString("id"));
+			reservation.setDate(item.getString("date"));
+			reservation.setClientName(item.getString("clientName"));
+			reservation.setSlotTimeEnd(item.getString("slotTimeEnd"));
+			reservation.setSlotTimeStart(item.getString("slotTimeStart"));
+			reservation.setPhoneNumber(item.getString("phoneNumber"));
+			reservation.setTableNumber(item.getInt("tableNumber"));
+			tableList.add(reservation);
 		}
 
 		System.out.println(tableList);
@@ -126,15 +126,10 @@ public class DynamoDbService {
 	}
 
 	private boolean doesReservationExist(ReservationInfo reservationInfo) {
-		List<ReservationDto> reservationsList = getReservations();
+		List<Reservations> reservationsList = getReservations();
 
-		for (ReservationDto reservation : reservationsList) {
-			if (reservation.getTableNumber() == reservationInfo.getTableNumber()
-					&& reservation.getDate().equals(reservationInfo.getDate())
-					&& reservation.getClientName().equals(reservationInfo.getClientName())
-					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
-					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
-					&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber())) {
+		for (Reservations reservation : reservationsList) {
+			if (reservation.getTableNumber() == reservationInfo.getTableNumber()) {
 				return true;
 			}
 		}
