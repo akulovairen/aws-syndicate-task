@@ -15,5 +15,5 @@ import java.util.Objects;
 @AllArgsConstructor
 @NoArgsConstructor
 public class ReservationsListDto {
-	private List<Map<String, Object>> reservations;
+	private List<Reservations> reservations;
 }

@@ -3,6 +3,7 @@ package com.task10.service;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDB;
 import com.amazonaws.services.dynamodbv2.AmazonDynamoDBClientBuilder;
 import com.amazonaws.services.dynamodbv2.datamodeling.DynamoDBMapper;
+import com.amazonaws.services.dynamodbv2.datamodeling.KeyPair;
 import com.amazonaws.services.dynamodbv2.document.*;
 import com.amazonaws.services.dynamodbv2.document.spec.GetItemSpec;
 import com.task10.dynamoDbDto.ReservationInfo;
@@ -46,33 +47,39 @@ public class DynamoDbService {
 		return tablesList;
 	}
 
-	public List<Map<String,Object>> getReservations() {
+	public List<Reservations> getReservations() {
 		DynamoDB dynamoDB = new DynamoDB(amazonClient);
 		Table reservationTable = dynamoDB.getTable(RESERVATION_TABLE);
 
-		System.out.println(reservationTable);
+		DynamoDBMapper mapper = new DynamoDBMapper(amazonClient);
+
+		Map<Class<?>, List<KeyPair>> keyPairMap = new HashMap<>();
+		keyPairMap.put(Reservations.class, Collections.emptyList());
+
+		Map<String, List<Object>> result = mapper.batchLoad(keyPairMap);
+
+		List<Object> reservationsObjects = result.get(RESERVATION_TABLE);
+
+		System.out.println(reservationsObjects);
+
 
 		Iterator<Item> iterator = reservationTable.scan().iterator();
-//		ArrayList<Reservations> tableList = new ArrayList<>();
-		ArrayList<Map<String, Object>> reservationList = new ArrayList<>();
+		ArrayList<Reservations> tableList = new ArrayList<>();
 
 		while (iterator.hasNext()) {
 			Item item = iterator.next();
-			Map<String, Object> reservationData = new HashMap<>();
-			reservationData.put("tableNumber", item.getInt("tableNumber"));
-			reservationData.put("clientName", item.getString("clientName"));
-			reservationData.put("phoneNumber", item.getString("phoneNumber"));
-			reservationData.put("date", item.getString("date"));
-			reservationData.put("slotTimeStart", item.getString("slotTimeStart"));
-			reservationData.put("slotTimeEnd", item.getString("slotTimeEnd"));
-			reservationList.add(reservationData);
+			Reservations reservation = new Reservations();
+			reservation.setId(item.getString("id"));
+			reservation.setDate(item.getString("date"));
+			reservation.setClientName(item.getString("clientName"));
+			reservation.setSlotTimeEnd(item.getString("slotTimeEnd"));
+			reservation.setSlotTimeStart(item.getString("slotTimeStart"));
+			reservation.setPhoneNumber(item.getString("phoneNumber"));
+			reservation.setTableNumber(item.getInt("tableNumber"));
+			tableList.add(reservation);
 		}
 
-		System.out.println("Get all reservation " + reservationList);
-		return reservationList;
-
-
-//		return tableList;
+		return tableList;
 	}
 
 	public int createTable(TablesInfoDto tablesInfoDto) {
@@ -95,10 +102,22 @@ public class DynamoDbService {
 			throw new RuntimeException("Table does not exist");
 		}
 
-		if (doesReservationExist(reservationInfo)) {
-			System.out.println("Reservation already exists");
-			throw new RuntimeException("Reservation already exists");
-		}
+		getReservations().stream().filter(x ->
+				x.getClientName().equals(reservationInfo.getClientName())
+						&& x.getDate().equals(reservationInfo.getDate())
+						&& x.getTableNumber() == reservationInfo.getTableNumber()
+						&& x.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
+						&& x.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
+						&& x.getPhoneNumber().equals(reservationInfo.getPhoneNumber())
+		).findFirst().ifPresent(x -> {
+			System.out.println("Item already exists");
+			throw new RuntimeException();
+		});
+
+//		if (doesReservationExist(reservationInfo)) {
+//			System.out.println("Reservation already exists");
+//			throw new RuntimeException("Reservation already exists");
+//		}
 
 		Reservations reservations = new Reservations();
 		String reservationId = UUID.randomUUID().toString();
@@ -129,36 +148,20 @@ public class DynamoDbService {
 	}
 
 	private boolean doesReservationExist(ReservationInfo reservationInfo) {
-		List<Map<String, Object>> reservationsList = getReservations();
+		List<Reservations> reservationsList = getReservations();
 
-		for (Map<String, Object> reservation : reservationsList) {
-			if (((Number) reservation.get("tableNumber")).intValue() == reservationInfo.getTableNumber()
-					&& reservation.get("date").equals(reservationInfo.getDate())
-					&& reservation.get("clientName").equals(reservationInfo.getClientName())
-					&& reservation.get("slotTimeEnd").equals(reservationInfo.getSlotTimeEnd())
-					&& reservation.get("slotTimeStart").equals(reservationInfo.getSlotTimeStart())
-					&& reservation.get("phoneNumber").equals(reservationInfo.getPhoneNumber())) {
+		for (Reservations reservation : reservationsList) {
+			if (reservation.getTableNumber() == reservationInfo.getTableNumber()
+					&& reservation.getDate().equals(reservationInfo.getDate())
+					&& reservation.getClientName().equals(reservationInfo.getClientName())
+					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
+					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
+					&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber())) {
 				return true;
 			}
 		}
 		return false;
 	}
-
-//	private boolean doesReservationExist(ReservationInfo reservationInfo) {
-//		List<Map<String,Object>> reservationsList = getReservations();
-//
-//		for (Reservations reservation : reservationsList) {
-//			if (reservation.getTableNumber() == reservationInfo.getTableNumber()
-//					&& reservation.getDate().equals(reservationInfo.getDate())
-//					&& reservation.getClientName().equals(reservationInfo.getClientName())
-//					&& reservation.getSlotTimeEnd().equals(reservationInfo.getSlotTimeEnd())
-//					&& reservation.getSlotTimeStart().equals(reservationInfo.getSlotTimeStart())
-//					&& reservation.getPhoneNumber().equals(reservationInfo.getPhoneNumber())) {
-//				return true;
-//			}
-//		}
-//		return false;
-//	}
 
 	public Tables getTableById(int tableId) {
 		DynamoDB dynamoDB = new DynamoDB(amazonClient);

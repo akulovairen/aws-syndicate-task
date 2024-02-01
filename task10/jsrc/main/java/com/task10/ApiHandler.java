@@ -62,7 +62,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 			try {
 				cognitoService.signUpUser(firstName, lastName, email, password);
 				return new APIGatewayProxyResponseEvent().withStatusCode(200);
-			} catch (Exception e) {
+			} catch (CognitoIdentityProviderException e) {
 				return new APIGatewayProxyResponseEvent().withStatusCode(400);
 			}
 		}
@@ -116,7 +116,7 @@ public class ApiHandler implements RequestHandler<APIGatewayProxyRequestEvent, A
 
 		if (path.equals("/reservations")) {
 			if (apiGatewayProxyRequestEvent.getHttpMethod().equals("GET")) {
-				List<Map<String, Object>> reservations = dynamoDbService.getReservations();
+				List<Reservations> reservations = dynamoDbService.getReservations();
 				ReservationsListDto reservationsListDto = new ReservationsListDto();
 				reservationsListDto.setReservations(reservations);
 				return new APIGatewayProxyResponseEvent()
